@@ -19,6 +19,7 @@
 package oshi.hardware.common;
 
 import java.lang.management.ManagementFactory;
+import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -338,9 +339,10 @@ public abstract class AbstractCentralProcessor implements CentralProcessor {
      * @return the string following id
      */
     private String parseIdentifier(String id) {
-        String[] idSplit = getIdentifier().split("\\s+");
+        StringTokenizer stringTokenizer = new StringTokenizer(getIdentifier());
         boolean found = false;
-        for (String s : idSplit) {
+        while (stringTokenizer.hasMoreTokens()) {
+            String s = stringTokenizer.nextToken();
             // If id string found, return next value
             if (found) {
                 return s;

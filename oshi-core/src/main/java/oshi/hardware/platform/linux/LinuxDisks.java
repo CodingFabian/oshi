@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -132,11 +133,13 @@ public class LinuxDisks implements Disks {
         this.mountsMap.clear();
         List<String> mounts = FileUtil.readFile("/proc/self/mounts");
         for (String mount : mounts) {
-            String[] split = mount.split("\\s+");
-            if (split.length < 2 || !split[0].startsWith("/dev/")) {
-                continue;
+            StringTokenizer stringTokenizer = new StringTokenizer(mount);
+            if (stringTokenizer.hasMoreTokens()) {
+                String key = stringTokenizer.nextToken();
+                if (key.startsWith("/dev/") && stringTokenizer.hasMoreTokens()) {
+                   this.mountsMap.put(key, stringTokenizer.nextToken());
+                }
             }
-            this.mountsMap.put(split[0], split[1]);
         }
     }
 

@@ -18,6 +18,7 @@
  */
 package oshi.util;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -50,7 +51,7 @@ public class FileUtil {
      *            The file to read
      *
      * @return A list of Strings representing each line of the file, or an empty
-     *         list if file could not be read or is empty
+     *         list if the file could not be read or is empty
      */
     public static List<String> readFile(String filename) {
         return readFile(filename, true);
@@ -66,7 +67,7 @@ public class FileUtil {
      *            Whether to log errors reading the file
      *
      * @return A list of Strings representing each line of the file, or an empty
-     *         list if file could not be read or is empty
+     *         list if the file could not be read or is empty
      */
     public static List<String> readFile(String filename, boolean reportError) {
         if (new File(filename).exists()) {
@@ -85,6 +86,51 @@ public class FileUtil {
     }
 
     /**
+     * Read the first line of a file. Intended primarily for Linux /proc
+     * filesystem to avoid recalculating file contents on iterative reads.
+     *
+     * @param filename
+     *            The file to read
+     *
+     * @return A String representing the first line of the file, or null if the
+     *         file could not be read or is empty
+     */
+    public static String readFirstLineOfFile(String filename) {
+        return readFirstLineOfFile(filename, true);
+    }
+
+    /**
+     * Read the first line of a file. Intended primarily for Linux /proc
+     * filesystem to avoid recalculating file contents on iterative reads.
+     *
+     * @param filename
+     *            The file to read
+     * @param reportError
+     *            Whether to log errors reading the file
+     * 
+     * @return A String representing the first line of the file, or null if the
+     *         file could not be read or is empty
+     */
+    public static String readFirstLineOfFile(String filename, boolean reportError) {
+        if (new File(filename).exists()) {
+            LOG.debug("Reading file {}", filename);
+            try {
+                try (BufferedReader reader = Files.newBufferedReader(Paths.get(filename), StandardCharsets.UTF_8)) {
+                    return reader.readLine();
+                }
+            } catch (IOException e) {
+                if (reportError) {
+                    LOG.error("Error reading file {}. {}", filename, e);
+                }
+            }
+        } else if (reportError) {
+            LOG.warn("File not found: {}", filename);
+        }
+        return null;
+    }
+
+    
+    /**
      * Read a file and return the long value contained therein. Intended
      * primarily for Linux /sys filesystem
      *
@@ -94,10 +140,10 @@ public class FileUtil {
      */
     public static long getLongFromFile(String filename) {
         LOG.debug("Reading file {}", filename);
-        List<String> read = FileUtil.readFile(filename, false);
-        if (!read.isEmpty()) {
-            LOG.trace("Read {}", read.get(0));
-            return ParseUtil.parseLongOrDefault(read.get(0), 0L);
+        String read = FileUtil.readFirstLineOfFile(filename, false);
+        if (read != null) {
+            LOG.trace("Read {}", read);
+            return ParseUtil.parseLongOrDefault(read, 0L);
         }
         return 0L;
     }
@@ -113,10 +159,10 @@ public class FileUtil {
     public static int getIntFromFile(String filename) {
         LOG.debug("Reading file {}", filename);
         try {
-            List<String> read = FileUtil.readFile(filename, false);
-            if (!read.isEmpty()) {
-                LOG.trace("Read {}", read.get(0));
-                return Integer.parseInt(read.get(0));
+            String read = FileUtil.readFirstLineOfFile(filename, false);
+            if (read != null) {
+                LOG.trace("Read {}", read);
+                return Integer.parseInt(read);
             }
         } catch (NumberFormatException ex) {
             LOG.debug("Unable to read value from {}. {}", filename, ex);
@@ -134,10 +180,10 @@ public class FileUtil {
      */
     public static String getStringFromFile(String filename) {
         LOG.debug("Reading file {}", filename);
-        List<String> read = FileUtil.readFile(filename, false);
-        if (!read.isEmpty()) {
-            LOG.trace("Read {}", read.get(0));
-            return read.get(0);
+        String read = FileUtil.readFirstLineOfFile(filename, false);
+        if (read != null) {
+            LOG.trace("Read {}", read);
+            return read;
         }
         return "";
     }
@@ -152,10 +198,10 @@ public class FileUtil {
      */
     public static String[] getSplitFromFile(String filename) {
         LOG.debug("Reading file {}", filename);
-        List<String> read = FileUtil.readFile(filename, false);
-        if (!read.isEmpty()) {
-            LOG.trace("Read {}", read.get(0));
-            return read.get(0).split("\\s+");
+        String read = FileUtil.readFirstLineOfFile(filename, false);
+        if (read != null) {
+            LOG.trace("Read {}", read);
+            return read.split("\\s+");
         }
         return new String[0];
     }

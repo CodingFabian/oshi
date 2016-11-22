@@ -200,9 +200,9 @@ public class LinuxFileSystem implements FileSystem {
         if (index < 0 || index > 2) {
             throw new IllegalArgumentException("Index must be between 0 and 2.");
         }
-        List<String> osDescriptors = FileUtil.readFile(filename);
-        if (!osDescriptors.isEmpty()) {
-            String[] splittedLine = osDescriptors.get(0).split("\\D+");
+        String osDescriptors = FileUtil.readFirstLineOfFile(filename);
+        if (osDescriptors != null) {
+            String[] splittedLine = osDescriptors.split("\\D+");
             return ParseUtil.parseLongOrDefault(splittedLine[index], 0L);
         }
         return 0L;

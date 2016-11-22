@@ -112,9 +112,9 @@ public class LinuxProcess extends AbstractProcess {
         long youngestJiffies = 0L;
         String youngestPid = "";
         for (File pid : pids) {
-            List<String> stat = FileUtil.readFile(String.format("/proc/%s/stat", pid.getName()));
-            if (!stat.isEmpty()) {
-                String[] split = stat.get(0).split("\\s+");
+            String stat = FileUtil.readFirstLineOfFile(String.format("/proc/%s/stat", pid.getName()));
+            if (stat != null) {
+                String[] split = stat.split("\\s+");
                 if (split.length < 22) {
                     continue;
                 }

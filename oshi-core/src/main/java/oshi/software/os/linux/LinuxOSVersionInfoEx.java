@@ -47,10 +47,9 @@ public class LinuxOSVersionInfoEx extends AbstractOSVersionInfoEx {
         if (getCodeName() == null) {
             setCodeName("");
         }
-        List<String> procVersion = null;
-        procVersion = FileUtil.readFile("/proc/version");
-        if (!procVersion.isEmpty()) {
-            String[] split = procVersion.get(0).split("\\s+");
+        String procVersion = FileUtil.readFirstLineOfFile("/proc/version");
+        if (procVersion != null) {
+            String[] split = procVersion.split("\\s+");
             for (String s : split) {
                 if (!"Linux".equals(s) && !"version".equals(s)) {
                     setBuildNumber(s);

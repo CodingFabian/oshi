@@ -177,9 +177,9 @@ public class LinuxCentralProcessor extends AbstractCentralProcessor {
         // first line is overall user,nice,system,idle,iowait,irq, etc.
         // cpu 3357 0 4313 1362393 ...
         String tickStr;
-        List<String> procStat = FileUtil.readFile("/proc/stat");
-        if (!procStat.isEmpty()) {
-            tickStr = procStat.get(0);
+        String procStat = FileUtil.readFirstLineOfFile("/proc/stat");
+        if (procStat != null) {
+            tickStr = procStat;
         } else {
             return ticks;
         }

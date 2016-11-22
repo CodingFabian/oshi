@@ -70,8 +70,7 @@ public class WindowsOperatingSystem extends AbstractOperatingSystem {
         Map<String, List<Object>> procs = WmiUtil.selectObjectsFrom(null, "Win32_Process", processProperties, null,
                 processPropertyTypes);
         List<OSProcess> procList = processMapToList(procs);
-        List<OSProcess> sorted = processSort(procList, limit, sort);
-        return sorted.toArray(new OSProcess[sorted.size()]);
+        return processSort(procList, limit, sort);
     }
 
     /**
@@ -87,9 +86,10 @@ public class WindowsOperatingSystem extends AbstractOperatingSystem {
 
     private List<OSProcess> processMapToList(Map<String, List<Object>> procs) {
         long now = System.currentTimeMillis();
-        List<OSProcess> procList = new ArrayList<>();
         // All map lists should be the same length. Pick one size and iterate
-        for (int p = 0; p < procs.get("Name").size(); p++) {
+        int size = procs.get("Name").size();
+        List<OSProcess> procList = new ArrayList<>(size);
+        for (int p = 0; p < size; p++) {
             procList.add(new WindowsProcess((String) procs.get("Name").get(p), (String) procs.get("CommandLine").get(p),
                     ((Long) procs.get("ExecutionState").get(p)).intValue(),
                     ((Long) procs.get("ProcessID").get(p)).intValue(),

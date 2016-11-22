@@ -91,8 +91,7 @@ public class FreeBsdOperatingSystem extends AbstractOperatingSystem {
                     now //
             ));
         }
-        List<OSProcess> sorted = processSort(procs, limit, sort);
-        return sorted.toArray(new OSProcess[sorted.size()]);
+        return processSort(procs, limit, sort);
     }
 
     /**

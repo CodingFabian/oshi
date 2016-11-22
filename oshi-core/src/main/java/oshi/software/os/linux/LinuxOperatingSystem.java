@@ -102,8 +102,7 @@ public class LinuxOperatingSystem extends AbstractOperatingSystem {
                 procs.add(proc);
             }
         }
-        List<OSProcess> sorted = processSort(procs, limit, sort);
-        return sorted.toArray(new OSProcess[sorted.size()]);
+        return processSort(procs, limit, sort);
     }
 
     /**

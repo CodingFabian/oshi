@@ -79,7 +79,7 @@ public abstract class AbstractOperatingSystem implements OperatingSystem {
     }
 
     /**
-     * Sorts an array of processes using the specified sorting, returning an
+     * Sorts a list of processes using the specified sorting, returning an
      * array with the top limit results if positive.
      *
      * @param processes
@@ -92,7 +92,7 @@ public abstract class AbstractOperatingSystem implements OperatingSystem {
      * @return An array of size limit (if positive) or of all processes, sorted
      *         as specified
      */
-    protected List<OSProcess> processSort(List<OSProcess> processes, int limit, ProcessSort sort) {
+    protected OSProcess[] processSort(List<OSProcess> processes, int limit, ProcessSort sort) {
         if (sort != null) {
             switch (sort) {
             case CPU:
@@ -128,9 +128,9 @@ public abstract class AbstractOperatingSystem implements OperatingSystem {
         if (limit > 0 && maxProcs > limit) {
             maxProcs = limit;
         }
-        List<OSProcess> procs = new ArrayList<>();
+        OSProcess[] procs = new OSProcess[maxProcs];
         for (int i = 0; i < maxProcs; i++) {
-            procs.add(processes.get(i));
+            procs[i]= processes.get(i);
         }
         return procs;
     }
